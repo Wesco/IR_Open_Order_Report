@@ -25,6 +25,6 @@ Sub Import_IR_OOR()
     Exit Sub
 
 Import_Err:
-    Debug.Print Err.Number
-    Debug.Print Err.Description
+    Debug.Print ERR.Number
+    Debug.Print ERR.Description
 End Sub

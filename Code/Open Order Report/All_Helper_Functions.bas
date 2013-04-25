@@ -205,11 +205,11 @@ Sub ImportGaps()
                      Result:="Complete"
         Else
             MsgBox Prompt:="User interrupt occurred", Title:="Error"
-            Err.Raise 18
+            ERR.Raise 18
         End If
     Else
         MsgBox Prompt:="Gaps could not be found.", Title:="Gaps not found"
-        Err.Raise 53
+        ERR.Raise 53
     End If
 
     Application.DisplayAlerts = True
@@ -288,7 +288,6 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
              "Complete"
 End Sub
 
-
 '---------------------------------------------------------------------------------------
 ' Proc : UserImportFile
 ' Date : 1/29/2013
@@ -321,7 +320,7 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
             DeleteFile File
         End If
     Else
-        Err.Raise 18
+        ERR.Raise 18
     End If
     Application.DisplayAlerts = OldDispAlert
 End Sub
@@ -474,7 +473,7 @@ Sub DeleteFile(FileName As String, Optional LogEntry As Boolean = False)
 File_Error:
     If LogEntry = True Then
         FillInfo FunctionName:="DeleteFile", _
-                 Result:="Err #: " & Err.Number
+                 Result:="Err #: " & ERR.Number
     End If
 End Sub
 
@@ -598,7 +597,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
     Else
         If ISN = "" Then
             FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
-            Err.Raise 53
+            ERR.Raise 53
         End If
     End If
 
@@ -619,23 +618,11 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             Application.DisplayAlerts = False
             ActiveWorkbook.Close
             Application.DisplayAlerts = True
-
-            FillInfo FunctionName:="Import117byISN", _
-                     Parameters:="Sales #: " & ISN, _
-                     Result:="Complete"
-            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
-            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
         Else
-            FillInfo FunctionName:="Import117byISN", _
-                     Parameters:="Sales #: " & ISN, _
-                     Result:="Failed - File not found"
-            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
-            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
             MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
         End If
     Else
-        FillInfo "Import117byISN", "Failed - Missing ISN", Parameters:="ReportType: " & ReportTypeText(RepType)
-        Err.Raise 18
+        ERR.Raise 18
     End If
 
 End Sub
@@ -663,7 +650,7 @@ Sub Import473(Destination As Range, Optional Branch As String = "3615")
         Application.DisplayAlerts = AlertStatus
     Else
         MsgBox Prompt:="473 report not found."
-        Err.Raise 18
+        ERR.Raise 18
     End If
 
 End Sub
@@ -743,21 +730,17 @@ End Sub
 ' Desc : Increments the macros version number
 '---------------------------------------------------------------------------------------
 Sub IncrementVersion()
-    Dim sPath As String
-    Dim LocalPath As String
+    Dim Path As String
     Dim Ver As Variant
     Dim FileNum As Integer
     Dim i As Integer
 
-    sPath = "\\7938-HP02\Shared\Macro Versions\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & ".txt"
-    LocalPath = GetWorkbookPath & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & ".txt"
+    Path = GetWorkbookPath & "Version.txt"
     FileNum = FreeFile
 
-    If FileExists(sPath) = True Then
-        Open sPath For Input As #FileNum
-        While Not EOF(FileNum)
-            Line Input #FileNum, Ver
-        Wend
+    If FileExists(Path) = True Then
+        Open Path For Input As #FileNum
+        Line Input #FileNum, Ver
         Close FileNum
 
         Ver = Replace(Ver, ".", "")
@@ -771,23 +754,14 @@ Sub IncrementVersion()
 
         Ver = Left(Ver, 1) & "." & Mid(Ver, 2, 1) & "." & Right(Ver, 1)
 
-        Open sPath For Output As #FileNum
-        Print #FileNum, Ver
-        Close #FileNum
-
-        Open LocalPath For Output As #FileNum
+        Open Path For Output As #FileNum
         Print #FileNum, Ver
         Close #FileNum
     Else
-        Open sPath For Output As #FileNum
-        Print #FileNum, "1.0.0"
-        Close #FileNum
-
-        Open LocalPath For Output As #FileNum
+        Open Path For Output As #FileNum
         Print #FileNum, "1.0.0"
         Close #FileNum
     End If
-
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -795,44 +769,54 @@ End Sub
 ' Date : 4/24/2013
 ' Desc : Checks to see if the macro is up to date
 '---------------------------------------------------------------------------------------
-Sub CheckForUpdates()
+Sub CheckForUpdates(URL As String)
     Dim Ver As String
     Dim LocalVer As String
-    Dim sPath As String
+    Dim Path As String
     Dim LocalPath As String
     Dim FileNum As Integer
+    Dim RegEx As Variant
 
-    sPath = "\\7938-HP02\Shared\Macro Versions\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & ".txt"
-    LocalPath = GetWorkbookPath & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & ".txt"
+    Set RegEx = CreateObject("VBScript.RegExp")
+    Ver = Left(DownloadTextFile(URL), 5)
+    RegEx.Pattern = "[0-9]\.[0-0]\.[0-9]"
+    Path = GetWorkbookPath & "Version.txt"
     FileNum = FreeFile
 
-    If FileExists(sPath) = True Then
-        Open sPath For Input As #FileNum
-        While Not EOF(FileNum)
-            Line Input #FileNum, Ver
-        Wend
-        Close FileNum
+    Open Path For Input As #FileNum
+    Line Input #FileNum, LocalVer
+    Close FileNum
 
-        Open LocalPath For Input As #FileNum
-        While Not EOF(FileNum)
-            Line Input #FileNum, LocalVer
-        Wend
-        Close FileNum
-
-        If Ver <> LocalVer Then
+    If RegEx.Test(Ver) Then
+        If CInt(Replace(Ver, ".", "")) > CInt(Replace(LocalVer, ".", "")) Then
             MsgBox Prompt:="An update is available. Please close the macro and get the latest version!", Title:="Update Available"
         End If
     End If
-
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Proc : DownloadTextFile
+' Date : 4/25/2013
+' Desc : Returns the contents of a text file from a website
+'---------------------------------------------------------------------------------------
+Function DownloadTextFile(URL As String) As String
+    Dim success As Boolean
+    Dim responseText As String
+    Dim oHTTP As Variant
 
+    Set oHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 
+    oHTTP.Open "GET", URL, False
+    oHTTP.Send
+    success = oHTTP.WaitForResponse()
 
+    If Not success Then
+        DownloadTextFile = ""
+        Exit Function
+    End If
 
+    responseText = oHTTP.responseText
+    Set oHTTP = Nothing
 
-
-
-
-
-
+    DownloadTextFile = responseText
+End Function
