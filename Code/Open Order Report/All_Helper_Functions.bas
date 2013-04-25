@@ -692,13 +692,20 @@ End Sub
 '---------------------------------------------------------------------------------------
 Function FindColumn(HeaderText As String, Optional SearchArea As Range) As Integer
     Dim i As Integer: i = 0
+    Dim ColText As String
 
     If TypeName(SearchArea) = "Nothing" Or TypeName(SearchArea) = Empty Then
-        Set SearchArea = ActiveSheet.UsedRange
+        Set SearchArea = Range(Cells(1, 1), Cells(1, ActiveSheet.UsedRange.Columns.Count))
     End If
 
     For i = 1 To SearchArea.Columns.Count
-        If Trim(SearchArea.Cells(1, i).Value) = HeaderText Then
+        ColText = Trim(SearchArea.Cells(1, i).Value)
+
+        Do While InStr(ColText, "  ")
+            ColText = Replace(ColText, "  ", " ")
+        Loop
+
+        If ColText = HeaderText Then
             FindColumn = i
             Exit For
         End If
