@@ -6,10 +6,15 @@ Option Explicit
 'Example: "Sleep 1500" will pause for 1.5 seconds
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
+'List of custom error messages
+Enum CustErr
+    COLNOTFOUND = 50000
+End Enum
+
 'Used when importing 117 to determine the type of report to pull
 Enum ReportType
     DS
-    Bo
+    BO
 End Enum
 
 '---------------------------------------------------------------------------------------
@@ -205,11 +210,11 @@ Sub ImportGaps()
                      Result:="Complete"
         Else
             MsgBox Prompt:="User interrupt occurred", Title:="Error"
-            ERR.Raise 18
+            Err.Raise 18
         End If
     Else
         MsgBox Prompt:="Gaps could not be found.", Title:="Gaps not found"
-        ERR.Raise 53
+        Err.Raise 53
     End If
 
     Application.DisplayAlerts = True
@@ -320,7 +325,7 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
             DeleteFile File
         End If
     Else
-        ERR.Raise 18
+        Err.Raise 18
     End If
     Application.DisplayAlerts = OldDispAlert
 End Sub
@@ -473,7 +478,7 @@ Sub DeleteFile(FileName As String, Optional LogEntry As Boolean = False)
 File_Error:
     If LogEntry = True Then
         FillInfo FunctionName:="DeleteFile", _
-                 Result:="Err #: " & ERR.Number
+                 Result:="Err #: " & Err.Number
     End If
 End Sub
 
@@ -597,7 +602,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
     Else
         If ISN = "" Then
             FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
-            ERR.Raise 53
+            Err.Raise 53
         End If
     End If
 
@@ -606,7 +611,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             Case ReportType.DS:
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " DSORDERS.xlsx"
 
-            Case ReportType.Bo:
+            Case ReportType.BO:
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " BACKORDERS.xlsx"
         End Select
 
@@ -622,7 +627,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
         End If
     Else
-        ERR.Raise 18
+        Err.Raise 18
     End If
 
 End Sub
@@ -650,7 +655,7 @@ Sub Import473(Destination As Range, Optional Branch As String = "3615")
         Application.DisplayAlerts = AlertStatus
     Else
         MsgBox Prompt:="473 report not found."
-        ERR.Raise 18
+        Err.Raise 18
     End If
 
 End Sub
@@ -662,7 +667,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 Function ReportTypeText(RepType As ReportType) As String
     Select Case RepType
-        Case ReportType.Bo:
+        Case ReportType.BO:
             ReportTypeText = "BO"
         Case ReportType.DS:
             ReportTypeText = "DS"
@@ -690,7 +695,7 @@ End Sub
 ' Date : 4/11/2013
 ' Desc : Returns the column number if a match is found
 '---------------------------------------------------------------------------------------
-Function FindColumn(HeaderText As String, Optional SearchArea As Range) As Integer
+Function FindColumn(ByVal HeaderText As String, Optional SearchArea As Range) As Integer
     Dim i As Integer: i = 0
     Dim ColText As String
 
@@ -710,6 +715,8 @@ Function FindColumn(HeaderText As String, Optional SearchArea As Range) As Integ
             Exit For
         End If
     Next
+    
+    If FindColumn = 0 Then Err.Raise CustErr.COLNOTFOUND, "FindColumn", HeaderText
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -827,3 +834,5 @@ Function DownloadTextFile(URL As String) As String
 
     DownloadTextFile = responseText
 End Function
+
+
