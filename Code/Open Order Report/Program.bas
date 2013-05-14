@@ -5,6 +5,7 @@ Sub Main()
     On Error GoTo ErrHandler
     Import_IR_OOR
     FixHeaders "IR DLC"
+    FixHeaders "IR Mox"
     CopyReport
     On Error GoTo 0
     Exit Sub
