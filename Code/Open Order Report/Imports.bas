@@ -3,28 +3,36 @@ Option Explicit
 
 Sub Import_IR_OOR()
 
-    On Error GoTo Import_Err
-    UserImportFile DestRange:=ThisWorkbook.Sheets("OOR1").Range("A1"), _
+    On Error GoTo IMPORT_ERR
+    UserImportFile DestRange:=ThisWorkbook.Sheets("IR DLC").Range("A1"), _
                    DelFile:=False, _
                    ShowAllData:=True
     On Error GoTo 0
 
-    Sheets("OOR1").Select
-    If FindColumn("PO Rel #") = 0 Then ActiveSheet.UsedRange.Cut Destination:=Sheets("OOR2").Range("A1")
+    Sheets("IR DLC").Select
+    
+    On Error GoTo COL_NOT_FOUND
+    FindColumn ("PO Rel #")
+    On Error GoTo 0
 
     If Range("A1").Value = "" Then
-        UserImportFile DestRange:=ThisWorkbook.Sheets("OOR1").Range("A1"), _
+        UserImportFile DestRange:=ThisWorkbook.Sheets("IR DLC").Range("A1"), _
                        DelFile:=False, _
                        ShowAllData:=True
     Else
-        UserImportFile DestRange:=ThisWorkbook.Sheets("OOR2").Range("A1"), _
+        UserImportFile DestRange:=ThisWorkbook.Sheets("IR Mox").Range("A1"), _
                        DelFile:=False, _
                        ShowAllData:=True
     End If
 
     Exit Sub
 
-Import_Err:
-    Debug.Print ERR.Number
-    Debug.Print ERR.Description
+COL_NOT_FOUND:
+    ActiveSheet.UsedRange.Cut Destination:=Sheets("IR Mox").Range("A1")
+    Resume Next
+
+IMPORT_ERR:
+    Debug.Print Err.Number
+    Debug.Print Err.Description
+    Exit Sub
 End Sub
