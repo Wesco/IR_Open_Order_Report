@@ -46,7 +46,7 @@ Sub FixHeaders(SheetName As String)
 
         Col = FindColumn(QTY_List(i))
         If Not Col = 0 Then Cells(1, Col).Value = "PO Qty"
-        
+
         Col = FindColumn(OPEN_List(i))
         If Not Col = 0 Then Cells(1, Col).Value = "Open PO Qty"
         On Error GoTo 0
