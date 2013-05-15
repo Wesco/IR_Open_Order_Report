@@ -15,6 +15,7 @@ End Enum
 Enum ReportType
     DS
     BO
+    ALL
 End Enum
 
 '---------------------------------------------------------------------------------------
@@ -613,6 +614,9 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
 
             Case ReportType.BO:
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " BACKORDERS.xlsx"
+                
+            Case ReportType.ALL
+                FileName = "3615 " & Format(Date, "m-dd-yy") & " ALLORDERS.xlsx"
         End Select
 
         sPath = "\\br3615gaps\gaps\3615 117 Report\ByInsideSalesNumber\" & ISN & "\" & FileName
