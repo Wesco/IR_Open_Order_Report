@@ -1,10 +1,9 @@
 Attribute VB_Name = "BuildOOR"
 Option Explicit
 
-Sub CopyReport()
+Sub CreateReport()
     Dim Col As Integer
     Dim ColList As Variant
-    Dim OpenQty_Col As Integer
     Dim TotalRows As Long
     Dim OORTotalRows As Long
     Dim i As Integer
@@ -35,6 +34,17 @@ Sub CopyReport()
         Range(Cells(2, Col), Cells(TotalRows, Col)).Copy Destination:=Sheets("OOR").Cells(OORTotalRows, i + 1)
         On Error GoTo 0
     Next
+
+    Sheets("OOR").Select
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+
+    Columns("A:A").Insert
+    [A1].Value = "UID"
+    With Range(Cells(2, 1), Cells(TotalRows, 1))
+        .Formula = "=" & Cells(2, FindColumn("PO")).Address(False, False) & "&" & Cells(2, FindColumn("Line")).Address(False, False)
+        .Value = .Value
+    End With
+
     Exit Sub
 
 COL_NOT_FOUND:
