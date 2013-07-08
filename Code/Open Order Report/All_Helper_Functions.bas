@@ -4,7 +4,7 @@ Option Explicit
 'Used for email function to prevent
 'all emails from being sent at once
 'Example: "Sleep 1500" will pause for 1.5 seconds
-Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 'List of custom error messages
 Enum CustErr
@@ -16,6 +16,7 @@ Enum ReportType
     DS
     BO
     ALL
+    INQ
 End Enum
 
 '---------------------------------------------------------------------------------------
@@ -234,7 +235,7 @@ End Sub
 ' Desc : Remove all rows that do not match a specified string
 '---------------------------------------------------------------------------------------
 Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
-    Dim Rng As Range
+    Dim rng As Range
     Dim aRng() As Variant
     Dim aHeaders As Variant
     Dim StartTime As Double
@@ -243,40 +244,40 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
     Dim y As Long
 
     StartTime = Timer
-    Set Rng = ActiveSheet.UsedRange
+    Set rng = ActiveSheet.UsedRange
     aHeaders = Range(Cells(1, 1), Cells(1, ActiveSheet.UsedRange.Columns.Count))
     iCounter = 1
 
-    Do While iCounter <= Rng.Rows.Count
+    Do While iCounter <= rng.Rows.Count
         If Match = True Then
-            If Rng(iCounter, ColNum).Value = sFilter Then
+            If rng(iCounter, ColNum).Value = sFilter Then
                 i = i + 1
             End If
         Else
-            If Rng(iCounter, ColNum).Value <> sFilter Then
+            If rng(iCounter, ColNum).Value <> sFilter Then
                 i = i + 1
             End If
         End If
         iCounter = iCounter + 1
     Loop
 
-    ReDim aRng(1 To i, 1 To Rng.Columns.Count) As Variant
+    ReDim aRng(1 To i, 1 To rng.Columns.Count) As Variant
 
     iCounter = 1
     i = 0
-    Do While iCounter <= Rng.Rows.Count
+    Do While iCounter <= rng.Rows.Count
         If Match = True Then
-            If Rng(iCounter, ColNum).Value = sFilter Then
+            If rng(iCounter, ColNum).Value = sFilter Then
                 i = i + 1
-                For y = 1 To Rng.Columns.Count
-                    aRng(i, y) = Rng(iCounter, y)
+                For y = 1 To rng.Columns.Count
+                    aRng(i, y) = rng(iCounter, y)
                 Next
             End If
         Else
-            If Rng(iCounter, ColNum).Value <> sFilter Then
+            If rng(iCounter, ColNum).Value <> sFilter Then
                 i = i + 1
-                For y = 1 To Rng.Columns.Count
-                    aRng(i, y) = Rng(iCounter, y)
+                For y = 1 To rng.Columns.Count
+                    aRng(i, y) = rng(iCounter, y)
                 Next
             End If
         End If
@@ -299,7 +300,7 @@ End Sub
 ' Date : 1/29/2013
 ' Desc : Prompts the user to select a file for import
 '---------------------------------------------------------------------------------------
-Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Optional ShowAllData As Boolean = False)
+Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Optional ShowAllData As Boolean = False, Optional SourceSheet As String = "")
     Dim File As String              'Full path to user selected file
     Dim FileDate As String          'Date the file was last modified
     Dim OldDispAlert As Boolean     'Original state of Application.DisplayAlerts
@@ -311,6 +312,7 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
     If File <> "False" Then
         FileDate = Format(FileDateTime(File), "mm/dd/yy")
         Workbooks.Open File
+        If SourceSheet = "" Then SourceSheet = ActiveSheet.Name
         If ShowAllData = True Then
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
@@ -318,7 +320,7 @@ Sub UserImportFile(DestRange As Range, Optional DelFile As Boolean = False, Opti
             ActiveSheet.UsedRange.Rows.Hidden = False
             On Error GoTo 0
         End If
-        ActiveSheet.UsedRange.Copy Destination:=DestRange
+        Sheets(SourceSheet).UsedRange.Copy Destination:=DestRange
         ActiveWorkbook.Close
         ThisWorkbook.Activate
 
@@ -594,19 +596,16 @@ End Sub
 ' Date : 4/10/2013
 ' Desc : Imports the most recent 117 report for the specified sales number
 '---------------------------------------------------------------------------------------
-Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal ISN As String = "", Optional Cancel As Boolean = False)
+Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal ISN As String = "")
     Dim sPath As String
     Dim FileName As String
 
-    If ISN = "" And Cancel = False Then
+    'If ISN is not set prompt the user for it.
+    If ISN = "" Then
         ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
-    Else
-        If ISN = "" Then
-            FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
-            Err.Raise 53
-        End If
     End If
 
+    'If user entered an ISN
     If ISN <> "" Then
         Select Case RepType
             Case ReportType.DS:
@@ -614,7 +613,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
 
             Case ReportType.BO:
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " BACKORDERS.xlsx"
-                
+
             Case ReportType.ALL
                 FileName = "3615 " & Format(Date, "m-dd-yy") & " ALLORDERS.xlsx"
         End Select
@@ -628,12 +627,14 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             ActiveWorkbook.Close
             Application.DisplayAlerts = True
         Else
-            MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
+            MsgBox Prompt:=ReportTypeText(RepType) & " report for '" & ISN & "' not found.", Title:="Error 53"
+            Err.Raise 53
         End If
     Else
+        'User interrupt occurred
+        MsgBox "An inside sales number was not entered."
         Err.Raise 18
     End If
-
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -661,7 +662,6 @@ Sub Import473(Destination As Range, Optional Branch As String = "3615")
         MsgBox Prompt:="473 report not found."
         Err.Raise 18
     End If
-
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -677,6 +677,8 @@ Function ReportTypeText(RepType As ReportType) As String
             ReportTypeText = "DS"
         Case ReportType.ALL:
             ReportTypeText = "ALL"
+        Case ReportType.INQ:
+            ReportTypeText = "INQ"
     End Select
 End Function
 
@@ -721,7 +723,7 @@ Function FindColumn(ByVal HeaderText As String, Optional SearchArea As Range) As
             Exit For
         End If
     Next
-    
+
     If FindColumn = 0 Then Err.Raise CustErr.COLNOTFOUND, "FindColumn", HeaderText
 End Function
 
@@ -840,5 +842,3 @@ Function DownloadTextFile(URL As String) As String
 
     DownloadTextFile = responseText
 End Function
-
-
