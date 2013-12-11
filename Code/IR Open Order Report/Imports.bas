@@ -36,7 +36,7 @@ Sub Import117()
     End If
 End Sub
 
-Sub ImportPrevCOOR()
+Sub ImportPrevOOR()
     Dim PrevDispAlert As Boolean
     Dim FileName As String
     Dim FilePath As String
@@ -47,8 +47,8 @@ Sub ImportPrevCOOR()
     'Look back up to 30 days for the combined open order report
     For i = 1 To 30
         dt = Date - i
-        FileName = "Combined OOR " & Format(dt, "yyyy-mm-dd") & ".xlsx"
-        FilePath = "\\7938-HP02\Shared\IR-Davidson-Mox\Open Order Report\" & Format(dt, "yyyy") & "\"
+        FileName = "OOR " & Format(dt, "yyyy-mm-dd") & ".xlsx"
+        FilePath = "\\7938-HP02\Shared\IR-Davidson-Mox\Open Order Report\" & Format(dt, "yyyy") & "\" & Format(dt, "mmm") & "\"
         
         If FileExists(FilePath & FileName) Then
             Exit For
@@ -56,7 +56,7 @@ Sub ImportPrevCOOR()
     Next
 
     'If the 117 open order report was found, import it
-    If FileExist(FileName & FilePath) Then
+    If FileExists(FilePath & FileName) Then
         PrevDispAlert = Application.DisplayAlerts
         Application.DisplayAlerts = False
 
@@ -93,31 +93,3 @@ Sub ImportMaster()
         Err.Raise Errors.FILE_NOT_FOUND, "ImportMaster", "IR Master not found."
     End If
 End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,7 +3,6 @@ Option Explicit
 Public Const VersionNumber As String = "1.0.0"
 
 Sub Main()
-
     'Import IR Open Order Report
     UserImportFile Sheets("IR OOR").Range("A1"), False
 
@@ -16,9 +15,26 @@ Sub Main()
     'Import GAPS inventory file
     ImportGaps
 
-    'Import Previous Combined Open Order Report
-    'ImportPrevCOOR
-
+    'Import Previous Open Order Report
+    ImportPrevOOR
+    
+    'Format GAPS to store SIMs as text
+    FormatGaps
+    
+    'Move descriptions to the first column and clean them up
+    FormatMaster
+    
+    'Clean up 117 report and add UID column
+    Format117
+    
+    'Format IR Open Order Report
+    FormatIROOR
+    
+    'Create Wesco's Open Order Report
+    CreateOOR
+    
+    'Format Wesco's Open Order Report
+    FormatOOR
 End Sub
 
 Sub Clean()
@@ -38,6 +54,7 @@ Sub Clean()
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" Then
             s.Select
+            s.AutoFilterMode = False
             Cells.Delete
             Range("A1").Select
         End If
