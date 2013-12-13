@@ -2,17 +2,21 @@ Attribute VB_Name = "Export"
 Option Explicit
 
 Sub ExportOOR()
+    Dim PrevDispAlert As Boolean
     Dim FilePath As String
     Dim FileName As String
     Dim FileExt As String
 
+    PrevDispAlert = Application.DisplayAlerts
     FilePath = "\\7938-HP02\Shared\IR-Davidson-Mox\Open Order Report\" & Format(Date, "yyyy") & "\" & Format(Date, "mmm") & "\"
     FileName = "OOR " & Format(Date, "yyyy-mm-dd")
     FileExt = ".xlsx"
 
-    If Not FolderExists(FilePath) Then RecMkDir Path
+    If Not FolderExists(FilePath) Then RecMkDir FilePath
     
+    Application.DisplayAlerts = False
     Sheets("Open Order Report").Copy
     ActiveWorkbook.SaveAs FilePath & FileName & FileExt, xlOpenXMLWorkbook
     ActiveWorkbook.Close
+    Application.DisplayAlerts = PrevDispAlert
 End Sub
