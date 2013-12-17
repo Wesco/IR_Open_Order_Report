@@ -35,6 +35,9 @@ Sub Main()
     
     'Format Wesco's Open Order Report
     FormatOOR
+    
+    'Export Wesco's Open Order Report to the network
+    ExportOOR
 End Sub
 
 Sub Clean()
