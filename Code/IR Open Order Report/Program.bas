@@ -3,6 +3,8 @@ Option Explicit
 Public Const VersionNumber As String = "1.0.0"
 
 Sub Main()
+    Application.ScreenUpdating = False
+    
     'Import IR Open Order Report
     UserImportFile Sheets("IR OOR").Range("A1"), False
 
@@ -38,6 +40,14 @@ Sub Main()
     
     'Export Wesco's Open Order Report to the network
     ExportOOR
+    
+    'Remove all data from the macro workbook
+    Clean
+    
+    Application.ScreenUpdating = True
+    
+    'Notify user that the macro finished
+    MsgBox "Complete!", vbOKOnly, "Macro"
 End Sub
 
 Sub Clean()
