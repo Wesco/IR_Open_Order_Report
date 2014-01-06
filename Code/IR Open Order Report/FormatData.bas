@@ -203,6 +203,13 @@ Sub FormatIROOR()
         If Cells(i, 6).Value = "0" Then Cells(i, 6).Value = ""
     Next
 
+    'Remove "USF HOLLAND" from PO Releases
+    For i = 2 To TotalRows
+        If Cells(i, 6).Value = "USF HOLLAND" Then
+            Cells(i, 6).ClearContents
+        End If
+    Next
+
     'Create UID column
     Range("A1").Value = "UID"
     Range("A2:A" & TotalRows).ClearContents
@@ -212,11 +219,10 @@ Sub FormatIROOR()
 
     'Remove irrelevant lines
     RemoveData "=*1L*", 4
-    RemoveData "=USF HOLLAND", 6
     RemoveData "=", 1
 
     TotalRows = ActiveSheet.UsedRange.Rows.Count
-    
+
     'Autofilter data
     ActiveSheet.UsedRange.AutoFilter
 
