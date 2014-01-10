@@ -30,7 +30,7 @@ Sub FormatMaster()
 
     'Lookup descriptions on GAPS, if they are not found, use the description listed on the master
     Range("A1").Value = "Description"
-    Range("A2:A" & TotalRows).Formula = "=TRIM(IFERROR(VLOOKUP(D2,Gaps!A:F,6,FALSE),G2))"
+    Range("A2:A" & TotalRows).Formula = "=TRIM(IFERROR(VLOOKUP(C2,Gaps!A:F,6,FALSE),E2))"
     Range("A2:A" & TotalRows).Value = Range("A2:A" & TotalRows).Value
 End Sub
 
@@ -95,6 +95,12 @@ Sub Format117()
     Range("B2:C" & TotalRows).Replace "=""", ""
     Range("B2:C" & TotalRows).Replace """", ""
     Range("B2:C" & TotalRows).Replace " ", ""
+
+    'Convert customer part numbers to strings
+    Columns("C:C").Insert
+    Range("C2:C" & TotalRows).Formula = "=""'"" & D2"
+    Range("C2:C" & TotalRows).Value = Range("C2:C" & TotalRows).Value
+    Columns("D:D").Delete
 
     'Remove extra spaces from part descriptions
     Columns(5).Insert
