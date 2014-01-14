@@ -98,9 +98,6 @@ Sub CreateOOR()
     'PROMISE DATE
     AddColumn "PROMISE DATE", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE)=0,"""",TEXT(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE), ""mmm dd, yyyy"")),"""")", "mmm dd, yyyy"
 
-    'ON BO
-    AddColumn "ON BO", "=IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)>0,TRUE,FALSE)"
-
     'BO
     AddColumn "BO", "=IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)"
 
