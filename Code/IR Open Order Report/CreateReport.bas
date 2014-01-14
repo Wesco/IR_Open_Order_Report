@@ -73,7 +73,7 @@ Sub CreateOOR()
     FillColumn Range("H2:H" & TotalRows), "=IFERROR(IF(VLOOKUP(A2,'IR OOR'!A:H,8,FALSE)=0,"""",VLOOKUP(A2,'IR OOR'!A:H,8,FALSE)),"""")"
 
     'Due Date
-    FillColumn Range("O2:O" & TotalRows), "=TEXT(IFERROR(IF(VLOOKUP(A2,'IR OOR'!A:O,15,FALSE)=0,"""",VLOOKUP(A2,'IR OOR'!A:O,15,FALSE)),""""),""mmm dd, yyyy"")"
+    FillColumn Range("O2:O" & TotalRows), "=TEXT(IFERROR(IF(VLOOKUP(A2,'IR OOR'!A:O,15,FALSE)=0,"""",VLOOKUP(A2,'IR OOR'!A:O,15,FALSE)),""""),""mmm dd, yyyy"")", "mmm dd, yyyy"
 
     'Remove unused columns
     Columns("P:R").Delete
@@ -89,8 +89,14 @@ Sub CreateOOR()
 
     TotalRows = Rows(Rows.Count).End(xlUp).Row
 
-    'FOUND
-    AddColumn "FOUND", "=NOT(IFERROR(VLOOKUP(A2,'117 OOR'!A:A,1,FALSE),"""")="""")"
+    'WESCO PO
+    AddColumn "WESCO PO", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:L,12,FALSE)=0,"""",VLOOKUP(A2,'117 OOR'!A:L,12,FALSE)),"""")"
+
+    'SUPPLIER
+    AddColumn "SUPPLIER", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:N,14,FALSE)=0,"""",VLOOKUP(A2,'117 OOR'!A:N,14,FALSE)),"""")"
+
+    'PROMISE DATE
+    AddColumn "PROMISE DATE", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE)=0,"""",TEXT(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE), ""mmm dd, yyyy"")),"""")", "mmm dd, yyyy"
 
     'ON BO
     AddColumn "ON BO", "=IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)>0,TRUE,FALSE)"
@@ -104,14 +110,14 @@ Sub CreateOOR()
     'SHIPPED
     AddColumn "SHIPPED", "=IFERROR(VLOOKUP(A2,'117 OOR'!A:K,11,FALSE),0)"
 
-    'STATUS
-    AddColumn "STATUS", "=IF(K2=TRUE,IF(M2>0,""B/O"",IF(G2=N2,""RTS"",IF(O2=G2,""SHIPPED"",""CHECK""))),""NOO"")"
-
     'OLD STATUS
-    AddColumn "OLD STATUS", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:P,16,FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:P,16,FALSE)),"""")"
+    AddColumn "OLD STATUS", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count - 1 & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count - 1 & ",FALSE)),"""")"
 
-    'NOTES
-    AddColumn "NOTES", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:R,18,FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:R,18,FALSE)),"""")"
+    'STATUS - This must always be the second to last column
+    AddColumn "STATUS", "=IF(NOT(IFERROR(VLOOKUP(A2,'117 OOR'!A:A,1,FALSE),"""")="""")=TRUE,IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)>0,""B/O"",IF(G2=IFERROR(VLOOKUP(A2,'117 OOR'!A:I,9,FALSE),0),""RTS"",IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:K,11,FALSE),0)=G2,""SHIPPED"",""CHECK""))),""NOO"")"
+
+    'NOTES - This must always be the last column
+    AddColumn "NOTES", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:R," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:R," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)),"""")"
 End Sub
 
 Private Sub FillColumn(Rng As Range, Formula As String, Optional NumberFormat As String = "General")
