@@ -272,6 +272,9 @@ Sub FormatOOR()
         .Font.Size = "11"
         .Columns.AutoFit
     End With
+
+    ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
+    ActiveSheet.ListObjects("Table1").Unlist
 End Sub
 
 Private Sub RemoveData(Criteria As String, Field As Integer)
