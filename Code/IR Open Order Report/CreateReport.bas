@@ -90,10 +90,10 @@ Sub CreateOOR()
     TotalRows = Rows(Rows.Count).End(xlUp).Row
 
     'WESCO PO
-    AddColumn "WESCO PO", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:L,12,FALSE)=0,"""",""="" & """""""" & VLOOKUP(A2,'117 OOR'!A:L,12,FALSE) & """"""""),"""")"
+    AddColumn "WESCO PO", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:L,12,FALSE)=0,"""",""=""&""""""""&TRIM(VLOOKUP(A2,'117 OOR'!A:L,12,FALSE))&""""""""),"""")"
 
     'SUPPLIER
-    AddColumn "SUPPLIER", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:N,14,FALSE)=0,"""",""="" & """""""" & VLOOKUP(A2,'117 OOR'!A:N,14,FALSE) & """"""""),"""")"
+    AddColumn "SUPPLIER", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:N,14,FALSE)=0,"""",""=""&""""""""&TRIM(VLOOKUP(A2,'117 OOR'!A:N,14,FALSE))&""""""""),"""")"
 
     'PROMISE DATE
     AddColumn "PROMISE DATE", "=IFERROR(IF(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE)=0,"""",TEXT(VLOOKUP(A2,'117 OOR'!A:M,13,FALSE), ""mmm dd, yyyy"")),"""")", "mmm dd, yyyy"
