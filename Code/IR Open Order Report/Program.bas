@@ -1,6 +1,7 @@
 Attribute VB_Name = "Program"
 Option Explicit
 Public Const VersionNumber As String = "1.0.0"
+Public Const RepositoryName As String = "IR_Open_Order_Report"
 
 Sub Main()
     Application.ScreenUpdating = False
