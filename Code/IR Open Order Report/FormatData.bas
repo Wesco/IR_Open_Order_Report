@@ -64,7 +64,10 @@ Sub Format117()
            Cells(1, i).Value <> "AVAILABLE QTY" And _
            Cells(1, i).Value <> "QTY TO SHIP" And _
            Cells(1, i).Value <> "BO QTY" And _
-           Cells(1, i).Value <> "QTY SHIPPED" Then
+           Cells(1, i).Value <> "QTY SHIPPED" And _
+           Cells(1, i).Value <> "PO NUMBER" And _
+           Cells(1, i).Value <> "PROMISE DATE" And _
+           Cells(1, i).Value <> "SUPPLIER NUM" Then
             Columns(i).Delete
         End If
     Next
@@ -79,7 +82,10 @@ Sub Format117()
                        "AVAILABLE QTY", _
                        "QTY TO SHIP", _
                        "BO QTY", _
-                       "QTY SHIPPED")
+                       "QTY SHIPPED", _
+                       "PO NUMBER", _
+                       "PROMISE DATE", _
+                       "SUPPLIER NUM")
 
     'Compare the correct column order to the actual column order
     For i = 0 To UBound(ColHeaders)
