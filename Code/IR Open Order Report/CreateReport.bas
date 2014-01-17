@@ -114,7 +114,7 @@ Sub CreateOOR()
     AddColumn "STATUS", "=IF(NOT(IFERROR(VLOOKUP(A2,'117 OOR'!A:A,1,FALSE),"""")="""")=TRUE,IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)>0,""B/O"",IF(G2=IFERROR(VLOOKUP(A2,'117 OOR'!A:I,9,FALSE),0),""RTS"",IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:K,11,FALSE),0)=G2,""SHIPPED"",""CHECK""))),""NOO"")"
 
     'NOTES - This must always be the last column
-    AddColumn "NOTES", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:R," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:R," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)),"""")"
+    AddColumn "NOTES", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)),"""")"
 End Sub
 
 Private Sub FillColumn(Rng As Range, Formula As String, Optional NumberFormat As String = "General")
