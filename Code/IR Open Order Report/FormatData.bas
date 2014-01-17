@@ -139,7 +139,7 @@ Sub Format117()
     'Load item descriptions into an array
     Sheets("117 OOR").Select
     TotalRows = ActiveSheet.UsedRange.Rows.Count
-    DescList = Range("F2:F" & TotalRows)
+    DescList = Range("E2:E" & TotalRows)
 
     'Find part numbers in item descriptions
     For i = 1 To UBound(DescList)
@@ -156,9 +156,35 @@ Sub Format117()
         End If
     Next
 
+    'Load customer part list into array
+    Sheets("IR OOR").Select
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+    PartList = Range("G3:G" & TotalRows)
+
+    'Find part numbers in item descriptions
+    Sheets("117 OOR").Select
+    For i = 1 To UBound(DescList)
+        'If CUSTOMER PART NUMBER is blank
+        If Cells(i + 1, 3).Value = "" Then
+            'See if any part numbers are in the item description
+            For j = 1 To UBound(PartList)
+                If PartList(j, 1) <> "" Then
+                    Result = InStr(1, DescList(i, 1), PartList(j, 1))
+                Else
+                    Result = 0
+                End If
+                If Result <> 0 Then
+                    Cells(i + 1, 3).Value = PartList(j, 1)
+                    Exit For
+                End If
+            Next
+        End If
+    Next
+
     'Create UID column
     Columns(1).Insert
     Range("A1").Value = "UID"
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
     Range("A2:A" & TotalRows).Formula = "=""="""""" & C2 & D2 & """""""""
     Range("A2:A" & TotalRows).Value = Range("A2:A" & TotalRows).Value
 End Sub
