@@ -20,7 +20,7 @@ Sub ExportOOR()
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevDispAlert
 
-    Email "abridges@wesco.com", _
+    Email "acoffey@wesco.com", _
           Subject:="IR Open Order Report", _
           CC:="SNelson@wesco.com", _
           Body:="An updated copy of the IR open order report can be found on the network <a href=""" & FilePath & FileName & FileExt & """" & ">here</a>."
