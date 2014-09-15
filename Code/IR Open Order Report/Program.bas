@@ -21,9 +21,6 @@ Sub Main()
     'Import Previous Open Order Report
     ImportPrevOOR
     
-    'Format GAPS to store SIMs as text
-    FormatGaps
-    
     'Move descriptions to the first column and clean them up
     FormatMaster
     

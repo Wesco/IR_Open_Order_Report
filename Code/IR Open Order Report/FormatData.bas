@@ -1,24 +1,6 @@
 Attribute VB_Name = "FormatData"
 Option Explicit
 
-Sub FormatGaps()
-    Dim TotalRows As Long
-
-    Sheets("Gaps").Select
-    TotalRows = ActiveSheet.UsedRange.Rows.Count
-
-    'Remove SIM numbers stored as numbers
-    Columns(1).Delete
-
-    'Insert column for SIMs
-    Columns(1).Insert
-
-    'Store SIMs as text
-    Range("A1").Value = "SIM"
-    Range("A2:A" & TotalRows).Formula = "=""=""""""&C2&D2&"""""""""
-    Range("A2:A" & TotalRows).Value = Range("A2:A" & TotalRows).Value
-End Sub
-
 Sub FormatMaster()
     Dim TotalRows As Long
 
