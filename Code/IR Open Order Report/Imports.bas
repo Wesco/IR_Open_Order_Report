@@ -1,41 +1,6 @@
 Attribute VB_Name = "Imports"
 Option Explicit
 
-Sub Import117()
-    Dim PrevDispAlert As Boolean
-    Dim FileName As String
-    Dim FilePath As String
-    Dim dt As Date
-    Dim i As Long
-
-
-    FilePath = "\\br3615gaps\gaps\3615 117 Report\DETAIL\ByInsideSalesperson\24\"
-
-    'Look back up to 30 days for the 117 open order report
-    For i = 0 To 30
-        dt = Date - i
-        FileName = "3615 " & Format(dt, "yyyy-mm-dd") & " ALLORDERS.csv"
-
-        If FileExists(FilePath & FileName) Then
-            Exit For
-        End If
-    Next
-
-    'If the 117 open order report was found, import it
-    If FileExists(FilePath & FileName) Then
-        PrevDispAlert = Application.DisplayAlerts
-        Application.DisplayAlerts = False
-
-        Workbooks.Open FilePath & FileName
-        ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("117 OOR").Range("A1")
-        ActiveWorkbook.Close
-
-        Application.DisplayAlerts = PrevDispAlert
-    Else
-        Err.Raise Errors.FILE_NOT_FOUND, "Import117", "117 Report not found."
-    End If
-End Sub
-
 Sub ImportPrevOOR()
     Dim PrevDispAlert As Boolean
     Dim FileName As String

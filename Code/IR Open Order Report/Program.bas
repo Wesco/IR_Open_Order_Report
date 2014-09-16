@@ -10,7 +10,7 @@ Sub Main()
     UserImportFile Sheets("IR OOR").Range("A1"), False
 
     'Import 117 Open Order Report
-    Import117
+    Import117 AllOrders, ByInsideSalesperson, Now, One, "24", Destination:=Sheets("117 OOR").Range("A1")
 
     'Import Master Part List
     ImportMaster
