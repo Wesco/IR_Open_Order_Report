@@ -32,6 +32,8 @@ Sub Main()
 
     On Error GoTo 0
 
+    On Error GoTo Main_Error
+
     'Move descriptions to the first column and clean them up
     FormatMaster
 
@@ -58,6 +60,8 @@ Sub Main()
     'Notify user that the macro finished
     MsgBox "Complete!", vbOKOnly, "Macro"
 
+    On Error GoTo 0
+
     Exit Sub
 
 Import_Error:
@@ -67,7 +71,14 @@ Import_Error:
     Else
         MsgBox Prompt:="Error " & Err.Number & " (" & Err.Description & ") occurred in " & Err.Source & ".", _
                Title:="Oops!"
+        Clean
     End If
+    Exit Sub
+
+Main_Error:
+    MsgBox Prompt:="Error " & Err.Number & " (" & Err.Description & ") occurred in " & Err.Source & ".", _
+           Title:="Oops!"
+    Clean
 End Sub
 
 Sub Clean()
