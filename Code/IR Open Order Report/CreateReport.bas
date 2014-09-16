@@ -111,10 +111,54 @@ Sub CreateOOR()
     AddColumn "OLD STATUS", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count - 1 & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count - 1 & ",FALSE)),"""")"
 
     'STATUS - This must always be the second to last column
-    AddColumn "STATUS", "=IF(NOT(IFERROR(VLOOKUP(A2,'117 OOR'!A:A,1,FALSE),"""")="""")=TRUE,IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:J,10,FALSE),0)>0,""B/O"",IF(G2=IFERROR(VLOOKUP(A2,'117 OOR'!A:I,9,FALSE),0),""RTS"",IF(IFERROR(VLOOKUP(A2,'117 OOR'!A:K,11,FALSE),0)=G2,""SHIPPED"",""CHECK""))),""NOO"")"
+    AddStatus
 
     'NOTES - This must always be the last column
     AddColumn "NOTES", "=IFERROR(IF(VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)=0,"""",VLOOKUP(A2,'Prev OOR'!A:Z," & Sheets("Prev OOR").UsedRange.Columns.Count & ",FALSE)),"""")"
+End Sub
+
+Private Sub AddStatus()
+    Dim UID As Variant
+    Dim Lookup As Variant
+    Dim TotalRows As Long
+    Dim TotalCols As Integer
+    Dim i As Long
+
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+    TotalCols = ActiveSheet.UsedRange.Columns.Count + 1
+
+    Cells(1, TotalCols).Value = "STATUS"
+
+    For i = 2 To TotalRows
+        UID = Range("A" & i).Value
+
+        On Error GoTo Not_Found
+        Lookup = WorksheetFunction.VLookup(UID, Sheets("117 OOR").Range("A:A"), 1, False)
+        On Error GoTo 0
+
+        'If UID is found on 117
+        If UID = Lookup Then
+            If CLng(WorksheetFunction.VLookup(UID, Sheets("117 OOR").Range("A:J"), 10, False)) > 0 Then
+                'If 117 BO Qty > 0
+                Cells(i, TotalCols).Value = "B/O"
+            ElseIf CLng(Range("G" & i).Value) = CLng(WorksheetFunction.VLookup(UID, Sheets("117 OOR").Range("A:I"), 9, False)) Then
+                'If Ord Qty = 117 Ord Qty
+                Cells(i, TotalCols).Value = "RTS"
+            ElseIf CLng(Range("G" & i).Value) = CLng(WorksheetFunction.VLookup(UID, Sheets("117 OOR").Range("A:K"), 11, False)) Then
+                'If Ord Qty = 117 Qty Shipped
+                Cells(i, TotalCols).Value = "SHIPPED"
+            Else
+                Cells(i, TotalCols).Value = "CHECK"
+            End If
+        Else
+            Cells(i, TotalCols).Value = "NOO"
+        End If
+    Next
+    Exit Sub
+
+Not_Found:
+    Lookup = "N/A"
+    Resume Next
 End Sub
 
 Private Sub FillColumn(Rng As Range, Formula As String, Optional NumberFormat As String = "General")
