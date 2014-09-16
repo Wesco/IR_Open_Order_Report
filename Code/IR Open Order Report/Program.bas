@@ -6,6 +6,8 @@ Public Const RepositoryName As String = "IR_Open_Order_Report"
 Sub Main()
     Application.ScreenUpdating = False
 
+    On Error GoTo Import_Error
+
     'Import IR Open Order Report
     UserImportFile Sheets("IR OOR").Range("A1"), False
 
@@ -27,6 +29,8 @@ Sub Main()
 
     'Import Previous Open Order Report
     ImportPrevOOR
+
+    On Error GoTo 0
 
     'Move descriptions to the first column and clean them up
     FormatMaster
@@ -53,6 +57,17 @@ Sub Main()
 
     'Notify user that the macro finished
     MsgBox "Complete!", vbOKOnly, "Macro"
+
+    Exit Sub
+
+Main_Error:
+    If Err.Source = "ImportPrevOOR" And Err.Number = Errors.FILE_NOT_FOUND Then
+        MsgBox "The previous OOR could not be found."
+        Resume Next
+    Else
+        MsgBox Prompt:="Error " & Err.Number & " (" & Err.Description & ") occurred in " & Err.Source & ".", _
+               Title:="Oops!"
+    End If
 End Sub
 
 Sub Clean()

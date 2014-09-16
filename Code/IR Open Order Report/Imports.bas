@@ -33,7 +33,7 @@ Sub ImportPrevOOR()
 
         Application.DisplayAlerts = PrevDispAlert
     Else
-        Err.Raise Errors.FILE_NOT_FOUND, "Import117", "117 Report not found."
+        Err.Raise Errors.FILE_NOT_FOUND, "ImportPrevOOR", "Previous OOR Report not found."
     End If
 End Sub
 
