@@ -86,6 +86,7 @@ Sub Format117()
 
     'Convert customer part numbers to strings
     Columns("C:C").Insert
+    Columns("C:C").NumberFormat = "General"
     Range("C2:C" & TotalRows).Formula = "=""'"" & D2"
     Range("C2:C" & TotalRows).Value = Range("C2:C" & TotalRows).Value
     Columns("D:D").Delete
@@ -93,12 +94,14 @@ Sub Format117()
     'Remove extra spaces from part descriptions
     Columns(5).Insert
     Range("E1").Value = "ITEM DESCRIPTION"
+    Range("E1:E" & TotalRows).NumberFormat = "General"
     Range("E2:E" & TotalRows).Formula = "=TRIM(F2)"
     Range("E2:E" & TotalRows).Value = Range("E2:E" & TotalRows).Value
     Columns(6).Delete
 
     'Lookup missing part numbers by description on Master
     Columns(3).Insert
+    Range("C1:C" & TotalRows).NumberFormat = "General"
     Range("C1").Value = "CUSTOMER PART NUMBER"
     'Lookup part on master, if it is not found and part number is not blank, keep the part number listed on the OOR
     'if the part number was not found and is blank, lookup part on master using the item description
@@ -167,6 +170,7 @@ Sub Format117()
     Columns(1).Insert
     Range("A1").Value = "UID"
     TotalRows = ActiveSheet.UsedRange.Rows.Count
+    Range("A2:A" & TotalRows).NumberFormat = "General"
     Range("A2:A" & TotalRows).Formula = "=""="""""" & C2 & D2 & """""""""
     Range("A2:A" & TotalRows).Value = Range("A2:A" & TotalRows).Value
 End Sub
