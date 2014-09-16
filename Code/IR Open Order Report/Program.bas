@@ -5,45 +5,52 @@ Public Const RepositoryName As String = "IR_Open_Order_Report"
 
 Sub Main()
     Application.ScreenUpdating = False
-    
+
     'Import IR Open Order Report
     UserImportFile Sheets("IR OOR").Range("A1"), False
 
     'Import 117 Open Order Report
-    Import117 AllOrders, ByInsideSalesperson, Now, One, "24", Destination:=Sheets("117 OOR").Range("A1")
+    Import117 Crit:=AllOrders, _
+              Seq:=ByInsideSalesperson, _
+              RepDate:=Now, _
+              SeqRng:=One, _
+              SeqData:="24", _
+              Branch:="3615", _
+              Detail:=True, _
+              Destination:=Sheets("117 OOR").Range("A1")
 
     'Import Master Part List
     ImportMaster
-    
+
     'Import GAPS inventory file
     ImportGaps
 
     'Import Previous Open Order Report
     ImportPrevOOR
-    
+
     'Move descriptions to the first column and clean them up
     FormatMaster
-    
+
     'Clean up 117 report and add UID column
     Format117
-    
+
     'Format IR Open Order Report
     FormatIROOR
-    
+
     'Create Wesco's Open Order Report
     CreateOOR
-    
+
     'Format Wesco's Open Order Report
     FormatOOR
-    
+
     'Export Wesco's Open Order Report to the network
     ExportOOR
-    
+
     'Remove all data from the macro workbook
     Clean
-    
+
     Application.ScreenUpdating = True
-    
+
     'Notify user that the macro finished
     MsgBox "Complete!", vbOKOnly, "Macro"
 End Sub
