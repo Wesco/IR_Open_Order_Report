@@ -60,7 +60,7 @@ Sub Main()
 
     Exit Sub
 
-Main_Error:
+Import_Error:
     If Err.Source = "ImportPrevOOR" And Err.Number = Errors.FILE_NOT_FOUND Then
         MsgBox "The previous OOR could not be found."
         Resume Next
